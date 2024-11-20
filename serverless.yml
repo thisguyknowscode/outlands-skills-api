@@ -1,0 +1,17 @@
+service: outland-skills-api
+
+provider:
+    name: aws
+    runtime: nodejs18.x
+
+functions:
+    chat:
+        handler: src/handlers/chatHandler.chatHandler
+        events:
+            - http:
+                  path: /chat
+                  method: post
+        timeout: 30
+
+plugins:
+    - serverless-offline

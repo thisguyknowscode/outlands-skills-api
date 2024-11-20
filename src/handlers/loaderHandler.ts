@@ -1,16 +1,19 @@
-import { Request, Response, } from 'express'
 import loaderService from '../services/loaderService'
 
-const loaderHandler = async (req: Request, res: Response) => {
+exports.loaderHandler = async () => {
 	try {
 		await loaderService()
 	} catch (err) {
 		console.error('loaderHandler=>loaderService', err)
 
-		res.status(500).send('This thing has issues')
+		return {
+			statusCode: 500,
+			body: `Loading error: ${err}`
+		}
 	}
 
-	res.status(200).send('loaderHandler')
+	return {
+		statusCode: 200,
+		body: `Loading success`
+	}
 }
-
-export default loaderHandler

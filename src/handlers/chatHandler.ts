@@ -1,22 +1,33 @@
-import { Request, Response } from 'express'
 import { createEmbedding } from '../services/embeddingService'
 import { vectorSearch } from '../services/vectorService'
 import { queryLLM } from '../services/openAIService'
+import dotenv from '@dotenvx/dotenvx'
+import EventBodyType from '../types/EventBodyType'
 
-const chatHandler = async (req: Request, res: Response) => {
-	const userQuery = req.body.query
+dotenv.config()
 
+exports.chatHandler = async (event: any) => {
 	try {
-		const embedding = await createEmbedding(userQuery)
+		const { query }: EventBodyType = JSON.parse(event.body ?? event)
+		const embedding = await createEmbedding(query)
 		const vectorMatches = await vectorSearch(embedding)
-		const results = await queryLLM(userQuery, vectorMatches)
+		const results = await queryLLM(query, vectorMatches)
 
 		if (results) {
-			res.status(200).send(results)
+			return {
+				statusCode: 200,
+				body: JSON.stringify(results),
+			}
 		}
 	} catch (err) {
-		res.status(500).send('Something went wrong.')
+		return JSON.stringify({
+			statusCode: 500,
+			body: `Something went wrong: ${err}`,
+		})
 	}
-}
 
-export default chatHandler
+	return JSON.stringify({
+		statusCode: 200,
+		body: 'No results',
+	})
+}

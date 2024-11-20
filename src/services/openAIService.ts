@@ -28,7 +28,7 @@ const queryLLM = async (userQuery: string, vectorMatches: IVectorMatches[]) => {
 			const { message } = choice
 
 			return {
-				content: message.content,
+				response: message.content,
 			}
 		})
 
